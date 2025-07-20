@@ -1,0 +1,144 @@
+<!DOCTYPE html><html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ballistic AI</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    body {
+      background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: white;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    h1 {
+      margin: 20px 0 10px;
+      font-size: 2rem;
+      text-align: center;
+    }
+    .description {
+      text-align: center;
+      max-width: 90%;
+      font-size: 1rem;
+      margin-bottom: 10px;
+      color: #ddd;
+    }
+    #chatbox {
+      width: 90%;
+      max-width: 600px;
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+    #messages {
+      height: 300px;
+      overflow-y: auto;
+      border: 1px solid #555;
+      padding: 10px;
+      margin-bottom: 10px;
+      border-radius: 5px;
+      background: #111;
+    }
+    .bot {
+      color: #00ffcc;
+      margin: 5px 0;
+    }
+    .user {
+      color: #fff;
+      margin: 5px 0;
+    }
+    input[type="text"] {
+      width: 80%;
+      padding: 10px;
+      border: none;
+      border-radius: 5px;
+    }
+    button {
+      padding: 10px 15px;
+      border: none;
+      background: #00ffcc;
+      color: #000;
+      font-weight: bold;
+      border-radius: 5px;
+      cursor: pointer;
+      margin: 5px;
+    }
+    .robot {
+      width: 60px;
+      height: 60px;
+      background: #00ffcc;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      margin: auto;
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h1>🤖 Ballistic AI</h1>
+  <div class="description">
+    <strong>Ballistic AI chatbot</strong> is created by <strong>The Cognito group</strong> for the topic <em>Evolution of AI</em>. It demonstrates how AI can be used for educational purposes and to make the world a safer place.
+  </div>
+  <div id="chatbox">
+    <div class="robot">🤖</div>
+    <div id="messages"></div>
+    <input type="text" id="userInput" placeholder="Type your message..." />
+    <button onclick="sendMessage()">Send</button>
+    <div style="margin-top: 10px;">
+      <button onclick="handleOption('What is AI?')">What is AI?</button>
+      <button onclick="handleOption('Tell a Joke')">Tell a Joke</button>
+      <button onclick="handleOption('Today\'s Weather')">Today’s Weather</button>
+      <button onclick="handleOption('Fun Fact')">Fun Fact</button>
+      <button onclick="handleOption('AI Benefits')">AI Benefits</button>
+      <button onclick="handleOption('AI Bane')">AI Bane</button>
+    </div>
+  </div>  <script>
+    async function sendMessage() {
+      const input = document.getElementById("userInput");
+      const msg = input.value;
+      if (!msg.trim()) return;
+      appendMessage("You", msg);
+      input.value = "";
+
+      let reply = await fetchBotReply(msg);
+      appendMessage("Bot", reply);
+    }
+
+    function handleOption(option) {
+      document.getElementById("userInput").value = option;
+      sendMessage();
+    }
+
+    function appendMessage(sender, text) {
+      const messages = document.getElementById("messages");
+      const message = document.createElement("div");
+      message.className = sender.toLowerCase();
+      message.textContent = `${sender}: ${text}`;
+      messages.appendChild(message);
+      messages.scrollTop = messages.scrollHeight;
+    }
+
+    async function fetchBotReply(msg) {
+      msg = msg.toLowerCase();
+      if (msg.includes("what is ai")) return "AI stands for Artificial Intelligence. It refers to machines that simulate human intelligence.";
+      if (msg.includes("joke")) return "Why did the robot go to therapy? Because it had hardware issues!";
+      if (msg.includes("weather")) return "Sorry, weather fetching requires online API access.";
+      if (msg.includes("fun fact")) return "Did you know? The first AI program was developed in 1956!";
+      if (msg.includes("benefits")) return "AI helps in healthcare, education, and automating tasks to save time and lives.";
+      if (msg.includes("bane")) return "AI can replace jobs, cause ethical issues, and lead to over-dependence if not used wisely.";
+      if (msg.includes("india")) return "The capital of India is New Delhi.";
+      if (msg.includes("real madrid")) return "Real Madrid is a professional football club based in Madrid, Spain.";
+      if (msg.includes("football")) return "Football is a team sport where two teams of 11 players try to score goals using a spherical ball.";
+
+      return "Sorry, I couldn't fetch that information.";
+    }
+  </script></body>
+</html>
