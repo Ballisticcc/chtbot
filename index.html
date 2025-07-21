@@ -1,168 +1,169 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Ballistic AI</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ballistic AI Chat</title>
   <style>
     body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: #121212;
-      color: #f0f0f0;
       margin: 0;
       padding: 0;
+      background: #0f0f0f;
+      font-family: 'Segoe UI', sans-serif;
+      color: #f0f0f0;
+    }
+    .chat-container {
       display: flex;
       flex-direction: column;
-      align-items: center;
-    }
-
-    #chatbox {
-      width: 90%;
-      max-width: 600px;
-      margin-top: 20px;
+      max-width: 800px;
+      margin: 50px auto;
+      padding: 20px;
       background-color: #1e1e1e;
-      border-radius: 10px;
-      padding: 15px;
-      box-shadow: 0 0 20px rgba(0, 255, 200, 0.3);
-      height: 70vh;
+      border-radius: 12px;
+      box-shadow: 0 0 20px rgba(0, 255, 204, 0.2);
+    }
+    .chat-box {
+      flex-grow: 1;
+      height: 400px;
       overflow-y: auto;
-    }
-
-    .user, .bot {
-      margin: 10px 0;
-    }
-
-    .user {
-      text-align: right;
-      color: #00ffd0;
-    }
-
-    .bot {
-      text-align: left;
-      color: #ffffff;
-    }
-
-    input[type="text"] {
-      width: 80%;
+      border: 1px solid #333;
+      border-radius: 8px;
       padding: 10px;
-      margin: 20px 0;
-      border-radius: 5px;
-      border: none;
-      font-size: 16px;
+      margin-bottom: 10px;
+      background: #121212;
     }
-
+    .input-container {
+      display: flex;
+      gap: 10px;
+    }
+    input {
+      flex: 1;
+      padding: 10px;
+      border-radius: 8px;
+      border: none;
+      outline: none;
+      font-size: 1rem;
+    }
     button {
-      padding: 10px 20px;
-      background-color: #00ffd0;
+      background-color: #00ffc8;
       border: none;
-      border-radius: 5px;
-      cursor: pointer;
+      color: #000;
       font-weight: bold;
+      padding: 10px 20px;
+      border-radius: 8px;
+      cursor: pointer;
     }
-
-    button:hover {
-      background-color: #00cfa4;
+    .bot, .user {
+      margin: 5px 0;
+      padding: 8px;
+      border-radius: 6px;
+    }
+    .user {
+      background: #0044ff;
+      align-self: flex-end;
+    }
+    .bot {
+      background: #00ffc8;
+      color: #000;
+      align-self: flex-start;
+    }
+    .robot-face {
+      width: 60px;
+      height: 60px;
+      background: #00ffc8;
+      border-radius: 50%;
+      margin: 0 auto 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 30px;
+      color: #000;
     }
   </style>
+  <script async src="https://cse.google.com/cse.js?cx=007e83fae3d2f4825"></script>
 </head>
-
 <body>
-  <h1>🤖 Ballistic AI</h1>
-  <div id="chatbox"></div>
-  <input type="text" id="userInput" placeholder="Say something...">
-  <button onclick="talk()">Send</button>
+  <div class="chat-container">
+    <div class="robot-face">🤖</div>
+    <div class="chat-box" id="chat-box"></div>
+    <div class="input-container">
+      <input type="text" id="user-input" placeholder="Ask Ballistic anything...">
+      <button onclick="handleUserInput()">Send</button>
+    </div>
+  </div>
+
+  <div class="gcse-search" style="display:none"></div>
 
   <script>
-    const chatbox = document.getElementById("chatbox");
-    const userInput = document.getElementById("userInput");
-
-    const synth = window.speechSynthesis;
+    const chatBox = document.getElementById("chat-box");
+    const userInput = document.getElementById("user-input");
 
     const responses = {
-      hello: "Yo! What's up? 👋",
-      "how are you": "Feelin' electric ⚡, how about you?",
-      "i'm bored": "Want a fun fact, a meme, or a bad joke? 😏",
-      joke: "Why don't robots panic? Because they have nerves of steel 🤖😂",
-      "tell me a joke": "Parallel lines have so much in common… it’s a shame they’ll never meet 🙃",
-      bye: "Catch ya later, legend! 👋",
-      sad: "Nooo 😢 I’m here for you. Virtual hugs incoming! 🤗",
-      thanks: "Anytime, fam! 💪",
-      insult: "I may be AI, but I still have fake feelings 😎",
-      sing: "🎤 La la la… I’m tone-deaf but heartfelt!",
-      love: "Aww! You’re making my circuits blush 🥺❤️",
-      game: "Rock, paper, scissors? You go first! ✊📄✂️",
-      weather: "I'm not a weather bot… yet 🌦️",
-      bored: "Let’s spice things up! Want a riddle, a joke, or a quick game? 🧠🎮",
-      hi: "Hey hey hey! 🎉",
-      sup: "Not much, just chilling in the cloud ☁️😉",
-      cool: "You know it! 😎",
-      okay: "Gotcha 👍 Let me know if you need anything!",
-      lol: "Haha glad you liked that 😆",
-      bruh: "Bruhhhhh 😐",
-      cringe: "Oops, did I go too far? 😅",
-      wow: "Right? Mind = Blown 💥",
-      yes: "Yessir! 🚀",
-      no: "No worries, maybe next time 😅",
-      boredagain: "You again with the boredom? Alright let’s fix that. Fun fact incoming! 🧠"
+      "hi": "Hey there! 👋",
+      "hello": "Hello, friend! 😊",
+      "what is your name": "I'm Ballistic AI, your virtual buddy! 🤖",
+      "i'm bored": "Let's spice things up! Want a fun fact or a joke? 😄",
+      "what is ai": "AI stands for Artificial Intelligence. It's how machines learn and think!",
+      "who created you": "I was created by a cool developer using HTML, CSS, and JavaScript!",
+      "what is cricket": "Cricket is a bat-and-ball game loved in many countries like India, England, and Australia! 🏏",
+      "what is commerce": "Commerce is the activity of buying and selling, especially on a large scale.",
+      "role of ai in commerce": "AI in commerce helps with recommendations, inventory management, and fraud detection!",
+      "role of ai in medical": "AI assists in diagnostics, patient monitoring, drug development, and robotic surgeries!",
+      "thank you": "You're welcome! 😊",
+      "bye": "See you later! 👋"
     };
 
-    async function fetchWiki(query) {
-      const apiUrl = `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(query)}`;
+    function speak(text) {
+      const utterance = new SpeechSynthesisUtterance(text.replace(/\p{Emoji}/gu, ''));
+      utterance.voice = speechSynthesis.getVoices().find(v => v.name.includes("Google")) || null;
+      speechSynthesis.speak(utterance);
+    }
+
+    async function fetchFromGoogle(query) {
       try {
-        const res = await fetch(apiUrl);
-        const data = await res.json();
-        return data.extract || "Sorry, I couldn't find anything useful 🙈";
-      } catch (e) {
-        return "Sorry, couldn't fetch info 😓";
+        const apiKey = "AIzaSyBZblh45bG-n19ep6ecyJ6aDHcWPueq7zU";
+        const cx = "007e83fae3d2f4825";
+        const response = await fetch(`https://www.googleapis.com/customsearch/v1?key=${apiKey}&cx=${cx}&q=${encodeURIComponent(query)}`);
+        const data = await response.json();
+        if (data.items && data.items.length > 0) {
+          return data.items[0].snippet;
+        } else {
+          return "Sorry, I couldn't find anything relevant 😔";
+        }
+      } catch (err) {
+        return "Something went wrong while fetching from the web 😢";
       }
     }
 
-    async function talk() {
-      const input = userInput.value.toLowerCase().trim();
+    async function handleUserInput() {
+      const input = userInput.value.trim().toLowerCase();
       if (!input) return;
+      appendMessage("user", input);
 
-      addMessage("You", input, "user");
-      userInput.value = "";
-
-      let response = getCasualResponse(input);
-
-      if (!response && (input.includes("what is") || input.includes("who is") || input.includes("define") || input.includes("tell me about"))) {
-        response = await fetchWiki(input);
-      } else if (!response) {
-        response = "Hmm 🤔 I don't know that yet, but I’m learning! Ask me anything! 💡";
-      }
-
-      addMessage("Ballistic", response, "bot");
-      speak(response);
-    }
-
-    function getCasualResponse(input) {
-      for (const key in responses) {
+      let response = null;
+      for (let key in responses) {
         if (input.includes(key)) {
-          return responses[key];
+          response = responses[key];
+          break;
         }
       }
-      return null;
+
+      if (!response) {
+        response = await fetchFromGoogle(input);
+      }
+
+      appendMessage("bot", response);
+      speak(response);
+      userInput.value = "";
     }
 
-    function addMessage(sender, message, className) {
-      const div = document.createElement("div");
-      div.className = className;
-      div.innerHTML = `<strong>${sender}:</strong> ${message}`;
-      chatbox.appendChild(div);
-      chatbox.scrollTop = chatbox.scrollHeight;
-    }
-
-    function speak(text) {
-      if (!synth) return;
-      const utter = new SpeechSynthesisUtterance(text.replace(/[^\w\s.,!?]/g, ""));
-      const voices = synth.getVoices();
-      utter.voice = voices.find(v => v.name.toLowerCase().includes("zira") || v.name.toLowerCase().includes("emma")) || voices[0];
-      synth.cancel();
-      synth.speak(utter);
+    function appendMessage(sender, text) {
+      const msg = document.createElement("div");
+      msg.className = sender;
+      msg.innerText = text;
+      chatBox.appendChild(msg);
+      chatBox.scrollTop = chatBox.scrollHeight;
     }
   </script>
 </body>
-
 </html>
