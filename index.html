@@ -82,7 +82,7 @@
     const responses = {
       hello: "Yo! What's up? 👋",
       "how are you": "Feelin' electric ⚡, how about you?",
-      "i'm bored": "Want a fun fact or a bad joke? 😏",
+      "i'm bored": "Want a fun fact, a meme, or a bad joke? 😏",
       joke: "Why don't robots panic? Because they have nerves of steel 🤖😂",
       "tell me a joke": "Parallel lines have so much in common… it’s a shame they’ll never meet 🙃",
       bye: "Catch ya later, legend! 👋",
@@ -92,7 +92,19 @@
       sing: "🎤 La la la… I’m tone-deaf but heartfelt!",
       love: "Aww! You’re making my circuits blush 🥺❤️",
       game: "Rock, paper, scissors? You go first! ✊📄✂️",
-      weather: "I'm not a weather bot… yet 🌦️"
+      weather: "I'm not a weather bot… yet 🌦️",
+      bored: "Let’s spice things up! Want a riddle, a joke, or a quick game? 🧠🎮",
+      hi: "Hey hey hey! 🎉",
+      sup: "Not much, just chilling in the cloud ☁️😉",
+      cool: "You know it! 😎",
+      okay: "Gotcha 👍 Let me know if you need anything!",
+      lol: "Haha glad you liked that 😆",
+      bruh: "Bruhhhhh 😐",
+      cringe: "Oops, did I go too far? 😅",
+      wow: "Right? Mind = Blown 💥",
+      yes: "Yessir! 🚀",
+      no: "No worries, maybe next time 😅",
+      boredagain: "You again with the boredom? Alright let’s fix that. Fun fact incoming! 🧠"
     };
 
     async function fetchWiki(query) {
@@ -118,7 +130,7 @@
       if (!response && (input.includes("what is") || input.includes("who is") || input.includes("define") || input.includes("tell me about"))) {
         response = await fetchWiki(input);
       } else if (!response) {
-        response = "Hmm 🤔 I don't know that yet, but I’m learning!";
+        response = "Hmm 🤔 I don't know that yet, but I’m learning! Ask me anything! 💡";
       }
 
       addMessage("Ballistic", response, "bot");
@@ -144,8 +156,9 @@
 
     function speak(text) {
       if (!synth) return;
-      const utter = new SpeechSynthesisUtterance(text.replace(/:[^\s]+:/g, ""));
-      utter.voice = synth.getVoices().find(v => v.name.includes("Zira") || v.name.includes("UK Female")) || synth.getVoices()[0];
+      const utter = new SpeechSynthesisUtterance(text.replace(/[^\w\s.,!?]/g, ""));
+      const voices = synth.getVoices();
+      utter.voice = voices.find(v => v.name.toLowerCase().includes("zira") || v.name.toLowerCase().includes("emma")) || voices[0];
       synth.cancel();
       synth.speak(utter);
     }
