@@ -1,165 +1,155 @@
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html>
+<html lang="en">
+
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Ballistic AI Chatbot</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ballistic AI</title>
   <style>
     body {
-      margin: 0;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(to right, #0f2027, #203a43, #2c5364);
-      color: #f1f1f1;
+      background: #121212;
+      color: #f0f0f0;
+      margin: 0;
+      padding: 0;
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 20px;
     }
-    h1 {
-      margin-bottom: 10px;
-    }
-    .info-box {
-      max-width: 800px;
-      padding: 16px;
-      margin-bottom: 20px;
-      background-color: #1a1a1a;
-      border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.5);
-      font-size: 14px;
-    }
-    #chatContainer {
-      background-color: #111;
-      border-radius: 10px;
+
+    #chatbox {
       width: 90%;
-      max-width: 700px;
-      padding: 20px;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
-    }
-    #messages {
-      min-height: 300px;
-      max-height: 400px;
-      overflow-y: auto;
-      margin-bottom: 15px;
-      padding: 10px;
+      max-width: 600px;
+      margin-top: 20px;
       background-color: #1e1e1e;
-      border-radius: 8px;
+      border-radius: 10px;
+      padding: 15px;
+      box-shadow: 0 0 20px rgba(0, 255, 200, 0.3);
+      height: 70vh;
+      overflow-y: auto;
     }
-    .message {
+
+    .user, .bot {
       margin: 10px 0;
     }
+
     .user {
-      color: #9be7ff;
+      text-align: right;
+      color: #00ffd0;
     }
+
     .bot {
-      color: #c5ffa0;
+      text-align: left;
+      color: #ffffff;
     }
-    input, button {
+
+    input[type="text"] {
+      width: 80%;
       padding: 10px;
+      margin: 20px 0;
       border-radius: 5px;
       border: none;
       font-size: 16px;
     }
-    input {
-      width: 70%;
-    }
+
     button {
-      background-color: #00adb5;
-      color: white;
+      padding: 10px 20px;
+      background-color: #00ffd0;
+      border: none;
+      border-radius: 5px;
       cursor: pointer;
-      margin-left: 10px;
+      font-weight: bold;
     }
+
     button:hover {
-      background-color: #007e85;
-    }
-    .quick-buttons {
-      margin-top: 15px;
-    }
-    .quick-buttons button {
-      margin: 5px;
-      background-color: #393e46;
-      transition: background-color 0.3s;
-    }
-    .quick-buttons button:hover {
-      background-color: #00adb5;
-    }
-    .robot-face {
-      font-size: 30px;
-      margin-bottom: 10px;
-      animation: bounce 1s infinite;
-    }
-    @keyframes bounce {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-5px); }
+      background-color: #00cfa4;
     }
   </style>
 </head>
-<body>
-  <h1>🤖 Ballistic AI Chatbot</h1>
-  <div class="info-box">
-    BALLISTIC AI chatbot is created by <strong>The Cognito Group</strong> for the topic <strong>"Evolution of AI"</strong> to demonstrate one of the many examples of AI, how it can be used for educational purposes and make the world a safer place.
-  </div>  <div id="chatContainer">
-    <div class="robot-face">🧠</div>
-    <div id="messages"></div>
-    <input type="text" id="userInput" placeholder="Ask me anything..." />
-    <button onclick="sendMessage()">Send</button>
-    <div class="quick-buttons">
-      <button onclick="quickAsk('What is AI?')">What is AI?</button>
-      <button onclick="quickAsk('Tell me a joke')">Tell me a joke</button>
-      <button onclick="quickAsk('What is today\'s weather?')">Today's Weather</button>
-    </div>
-  </div>  <script>
-    const messagesDiv = document.getElementById("messages");
 
-    async function fetchWikiSummary(query) {
+<body>
+  <h1>🤖 Ballistic AI</h1>
+  <div id="chatbox"></div>
+  <input type="text" id="userInput" placeholder="Say something...">
+  <button onclick="talk()">Send</button>
+
+  <script>
+    const chatbox = document.getElementById("chatbox");
+    const userInput = document.getElementById("userInput");
+
+    const synth = window.speechSynthesis;
+
+    const responses = {
+      hello: "Yo! What's up? 👋",
+      "how are you": "Feelin' electric ⚡, how about you?",
+      "i'm bored": "Want a fun fact or a bad joke? 😏",
+      joke: "Why don't robots panic? Because they have nerves of steel 🤖😂",
+      "tell me a joke": "Parallel lines have so much in common… it’s a shame they’ll never meet 🙃",
+      bye: "Catch ya later, legend! 👋",
+      sad: "Nooo 😢 I’m here for you. Virtual hugs incoming! 🤗",
+      thanks: "Anytime, fam! 💪",
+      insult: "I may be AI, but I still have fake feelings 😎",
+      sing: "🎤 La la la… I’m tone-deaf but heartfelt!",
+      love: "Aww! You’re making my circuits blush 🥺❤️",
+      game: "Rock, paper, scissors? You go first! ✊📄✂️",
+      weather: "I'm not a weather bot… yet 🌦️"
+    };
+
+    async function fetchWiki(query) {
+      const apiUrl = `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(query)}`;
       try {
-        const response = await fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(query)}`);
-        if (!response.ok) throw new Error("Failed to fetch Wikipedia");
-        const data = await response.json();
-        return data.extract || "No summary available.";
-      } catch (error) {
-        return "Sorry, I couldn’t fetch data from Wikipedia.";
+        const res = await fetch(apiUrl);
+        const data = await res.json();
+        return data.extract || "Sorry, I couldn't find anything useful 🙈";
+      } catch (e) {
+        return "Sorry, couldn't fetch info 😓";
       }
+    }
+
+    async function talk() {
+      const input = userInput.value.toLowerCase().trim();
+      if (!input) return;
+
+      addMessage("You", input, "user");
+      userInput.value = "";
+
+      let response = getCasualResponse(input);
+
+      if (!response && (input.includes("what is") || input.includes("who is") || input.includes("define") || input.includes("tell me about"))) {
+        response = await fetchWiki(input);
+      } else if (!response) {
+        response = "Hmm 🤔 I don't know that yet, but I’m learning!";
+      }
+
+      addMessage("Ballistic", response, "bot");
+      speak(response);
+    }
+
+    function getCasualResponse(input) {
+      for (const key in responses) {
+        if (input.includes(key)) {
+          return responses[key];
+        }
+      }
+      return null;
+    }
+
+    function addMessage(sender, message, className) {
+      const div = document.createElement("div");
+      div.className = className;
+      div.innerHTML = `<strong>${sender}:</strong> ${message}`;
+      chatbox.appendChild(div);
+      chatbox.scrollTop = chatbox.scrollHeight;
     }
 
     function speak(text) {
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.voice = speechSynthesis.getVoices().find(v => v.name.includes('Google') || v.default);
-      speechSynthesis.speak(utterance);
+      if (!synth) return;
+      const utter = new SpeechSynthesisUtterance(text.replace(/:[^\s]+:/g, ""));
+      utter.voice = synth.getVoices().find(v => v.name.includes("Zira") || v.name.includes("UK Female")) || synth.getVoices()[0];
+      synth.cancel();
+      synth.speak(utter);
     }
+  </script>
+</body>
 
-    async function sendMessage() {
-      const input = document.getElementById("userInput");
-      const userText = input.value.trim();
-      if (!userText) return;
-      addMessage("You", userText, "user");
-      input.value = "";
-
-      let botReply = await getBotReply(userText);
-      addMessage("Bot", botReply, "bot");
-      speak(botReply);
-    }
-
-    async function getBotReply(text) {
-      text = text.toLowerCase();
-      if (text.includes("joke")) {
-        return "Why don't robots take vacations? Because they don’t want to lose their byte!";
-      } else if (text.includes("ai")) {
-        return "AI stands for Artificial Intelligence, the simulation of human intelligence in machines.";
-      } else {
-        return await fetchWikiSummary(text);
-      }
-    }
-
-    function addMessage(sender, text, cls) {
-      const msg = document.createElement("div");
-      msg.className = `message ${cls}`;
-      msg.innerHTML = `<strong>${sender}:</strong> ${text}`;
-      messagesDiv.appendChild(msg);
-      messagesDiv.scrollTop = messagesDiv.scrollHeight;
-    }
-
-    function quickAsk(text) {
-      document.getElementById("userInput").value = text;
-      sendMessage();
-    }
-  </script></body>
 </html>
