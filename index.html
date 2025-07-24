@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Ballistic Bot - Chat AI</title>
+  <title>Ballistic Bot v5</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -61,19 +61,19 @@
   </style>
 </head>
 <body>
-  <h1>🤖 Ballistic Bot</h1>
+  <h1>🎙️ Ballistic Bot v5</h1>
   <div id="chatbox"></div>
-  <input type="text" id="userInput" placeholder="Ask me anything about AI...">
-  <button onclick="chat()">Send</button>
+  <input type="text" id="userInput" placeholder="Type or use voice...">
+  <div>
+    <button onclick="chat()">Send</button>
+    <button onclick="startVoiceInput()">🎤 Speak</button>
+  </div>
 
   <div class="button-grid">
     <button onclick="autoAsk('What is AI?')">What is AI?</button>
-    <button onclick="autoAsk('Uses of AI')">Uses of AI</button>
     <button onclick="autoAsk('Tell me a joke')">AI Joke</button>
-    <button onclick="autoAsk('Is AI dangerous?')">AI Danger?</button>
-    <button onclick="autoAsk('What is machine learning?')">ML?</button>
-    <button onclick="autoAsk('AI vs ML')">AI vs ML</button>
-    <button onclick="autoAsk('What is an AI factory?')">AI Factory?</button>
+    <button onclick="autoAsk('How are you?')">How are you?</button>
+    <button onclick="autoAsk('Tell me something cool')">Something cool</button>
     <button onclick="autoAsk('Give me a random fact')">Random Fact</button>
   </div>
 
@@ -82,29 +82,36 @@
 
     const jokes = [
       "Why did the AI break up with its girlfriend? Too many neural issues.",
-      "I told my AI to write a joke. It replied: 'I am funny.'",
-      "My AI wants to be a stand-up comedian. Its delivery is robotic though.",
-      "Why don’t robots get scared? They have nerves of steel."
+      "Why don’t robots get scared? They have nerves of steel.",
+      "My AI wants to be a stand-up comedian... It’s got the delivery of a toaster.",
     ];
 
     const facts = [
-      "AI can detect cancer better than some doctors.",
-      "Voice assistants are basically baby AIs.",
-      "AI helped beat world chess champions... with ease.",
-      "Most social media feeds are run by AI. Wild, huh?",
-      "Some AIs can generate original artwork!"
+      "AI can beat chess grandmasters easily now.",
+      "Most YouTube and Netflix suggestions are chosen by AI.",
+      "There's an AI that paints pictures better than some humans!",
     ];
 
-    const responses = {
-      "what is ai": "AI stands for Artificial Intelligence – giving machines the ability to kinda think. Like me, but cooler.",
-      "uses of ai": "AI is used in self-driving cars, voice assistants, Netflix recommendations, and even fridges now.",
-      "what is machine learning": "Machine Learning is like feeding your AI a ton of data so it gets smarter over time. Just like you cramming before exams.",
-      "ai vs ml": "AI is the big concept, and ML is a part of it where the AI learns from data. Like AI is the cake and ML is the sugar.",
-      "is ai dangerous": "Depends. I won't hack your fridge. But unmonitored AI in wrong hands? Spooky stuff.",
-      "who invented ai": "The term AI was coined by John McCarthy in 1956. Big brain move.",
-      "what is an ai factory": "An AI factory is a workflow system to train, test, and deploy AIs like they're on a conveyor belt. Smart stuff.",
+    const casualReplies = {
+      "how are you": "I'm chilling, running on pure code and vibes.",
+      "what's up": "Just out here dodging bugs and dropping facts.",
+      "what are you doing": "Talking to a legend like you. Duh.",
+      "tell me something cool": () => facts[Math.floor(Math.random() * facts.length)],
       "tell me a joke": () => jokes[Math.floor(Math.random() * jokes.length)],
-      "give me a random fact": () => facts[Math.floor(Math.random() * facts.length)]
+      "give me a random fact": () => facts[Math.floor(Math.random() * facts.length)],
+      "hi": "Yo! Wassup, commander?",
+      "hello": "Hey there! Ready to talk AI or just chill?",
+      "bye": "Later! Don’t forget to come back and upgrade me soon 😎",
+    };
+
+    const aiReplies = {
+      "what is ai": "AI stands for Artificial Intelligence – machines doing smart stuff, like chatting with you.",
+      "uses of ai": "AI is used in self-driving cars, chatbots, face recognition, and even your phone's camera filters.",
+      "what is machine learning": "ML is when an AI learns patterns from data instead of being told everything manually.",
+      "ai vs ml": "AI is the big brain idea. ML is one of its strongest muscles.",
+      "is ai dangerous": "Not me 😇 but yeah, in bad hands, AI could go Skynet real quick.",
+      "who invented ai": "John McCarthy gave the term 'Artificial Intelligence' in 1956. Old school genius.",
+      "what is an ai factory": "Imagine a training gym for AI. That’s what an AI factory is—building models at scale."
     };
 
     function chat() {
@@ -115,13 +122,16 @@
       addMessage("You", input, "user");
 
       let lowerInput = input.toLowerCase();
-      let reply = "Uhh... I'm not sure about that. Try asking something AI-related!";
+      let reply = "I'm still learning how to respond to that. Try something else?";
 
-      for (let key in responses) {
-        if (lowerInput.includes(key)) {
-          const val = responses[key];
-          reply = typeof val === "function" ? val() : val;
-          break;
+      if (casualReplies[lowerInput]) {
+        reply = typeof casualReplies[lowerInput] === "function" ? casualReplies[lowerInput]() : casualReplies[lowerInput];
+      } else {
+        for (let key in aiReplies) {
+          if (lowerInput.includes(key)) {
+            reply = aiReplies[key];
+            break;
+          }
         }
       }
 
@@ -157,6 +167,30 @@
 
     function stripEmojis(text) {
       return text.replace(/[\u{1F300}-\u{1F6FF}|\u{2600}-\u{27BF}|\u{1F900}-\u{1F9FF}]/gu, '');
+    }
+
+    function startVoiceInput() {
+      if (!('webkitSpeechRecognition' in window)) {
+        alert("Voice recognition not supported on this browser. Use Chrome.");
+        return;
+      }
+
+      const recognition = new webkitSpeechRecognition();
+      recognition.continuous = false;
+      recognition.interimResults = false;
+      recognition.lang = 'en-US';
+
+      recognition.start();
+
+      recognition.onresult = function(event) {
+        const transcript = event.results[0][0].transcript;
+        document.getElementById("userInput").value = transcript;
+        chat();
+      };
+
+      recognition.onerror = function(event) {
+        console.error("Voice error: ", event.error);
+      };
     }
   </script>
 </body>
