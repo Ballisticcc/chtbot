@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Ballistic Bot</title>
+  <title>Ballistic Bot - Talking AI</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -108,6 +108,7 @@
 
       setTimeout(() => {
         addMessage("Ballistic", reply, "bot");
+        speak(reply);
       }, 500);
 
       document.getElementById("userInput").value = "";
@@ -124,6 +125,15 @@
       msg.innerHTML = `<strong>${sender}:</strong> ${text}`;
       chatbox.appendChild(msg);
       chatbox.scrollTop = chatbox.scrollHeight;
+    }
+
+    function speak(text) {
+      const speech = new SpeechSynthesisUtterance(text);
+      speech.lang = "en-US";
+      speech.pitch = 1;
+      speech.rate = 1;
+      speech.volume = 1;
+      speechSynthesis.speak(speech);
     }
   </script>
 </body>
