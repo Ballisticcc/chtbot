@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Ballistic Bot - Talking AI</title>
+  <title>Ballistic Bot - Casual AI</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -69,27 +69,52 @@
   <div class="button-grid">
     <button onclick="autoAsk('What is AI')">What is AI?</button>
     <button onclick="autoAsk('Uses of AI')">Uses of AI</button>
-    <button onclick="autoAsk('Types of AI')">Types of AI</button>
-    <button onclick="autoAsk('What is machine learning')">What is ML?</button>
-    <button onclick="autoAsk('AI vs ML')">AI vs ML</button>
-    <button onclick="autoAsk('AI factory')">AI Factory?</button>
-    <button onclick="autoAsk('Who invented AI')">Inventor of AI</button>
-    <button onclick="autoAsk('Is AI dangerous')">Is AI dangerous?</button>
+    <button onclick="autoAsk('Tell me an AI joke')">AI Joke</button>
+    <button onclick="autoAsk('Is AI dangerous')">Is AI Dangerous?</button>
+    <button onclick="autoAsk('What is machine learning')">ML?</button>
+    <button onclick="autoAsk('Who invented AI')">Inventor?</button>
+    <button onclick="autoAsk('What is an AI factory')">AI Factory?</button>
+    <button onclick="autoAsk('Random')">Random Fun Fact</button>
   </div>
 
   <script>
     const chatbox = document.getElementById("chatbox");
 
     const responses = {
-      "what is ai": "AI stands for Artificial Intelligence – machines that can kinda think like humans. Cool, right?",
-      "uses of ai": "Oh dude, AI is used in self-driving cars, chatbots (like me!), recommendation systems, healthcare, you name it!",
-      "types of ai": "There are 3 types: Narrow AI (me!), General AI (like a human brain), and Super AI (scary smart robots 🤖).",
-      "who invented ai": "John McCarthy coined the term 'AI' back in 1956. Total brainiac.",
-      "what is machine learning": "It's a type of AI where computers learn from data. Basically, they study hard and get better over time.",
-      "ai factory": "It's like a production line where AI models are trained, improved, and deployed. A smart factory for smart brains.",
-      "ai vs ml": "AI is the big daddy, ML is its hardworking kid that learns from experience.",
-      "is ai dangerous": "Well, not me 😇. But yeah, if misused or uncontrolled, AI *could* be risky.",
+      "what is ai": "AI is like giving your computer a brain... but not a human brain, more like a goldfish that learns quickly.",
+      "uses of ai": "From recommending your next binge to driving Teslas, AI's everywhere. It's even in your camera filters, bruh.",
+      "what is machine learning": "ML is AI's way of saying 'I'll do better next time, I promise!' It learns from data like we learn from memes.",
+      "ai vs ml": "AI is the boss. ML is the intern doing all the heavy lifting while AI takes the credit.",
+      "is ai dangerous": "Well, I won't take over the world. But if someone trains an AI to steal your fridge, that ain't on me.",
+      "who invented ai": "John McCarthy coined 'AI' in 1956. Basically the godfather of smart code.",
+      "what is an ai factory": "An AI factory is like a gym for algorithms. They go in dumb, get trained, come out smart and ripped.",
+      "tell me an ai joke": getRandomJoke(),
+      "random": getRandomFact()
     };
+
+    const jokes = [
+      "Why did the AI get kicked out of school? It kept copying its own homework.",
+      "I tried making an AI that tells jokes... but it only tells ones about 1s and 0s.",
+      "Why did the robot go to therapy? It had a lot of processing to do.",
+      "My AI told me it’s self-aware. I said, 'Cool, now do my homework.'",
+      "AI walked into a bar. Bartender says, 'We don’t serve your kind here.' AI replies, 'That’s discriminatory data!'"
+    ];
+
+    const facts = [
+      "Did you know? AI beat a world champion at chess in 1997. Checkmate, humans.",
+      "Machine learning is used to detect diseases way before symptoms show. Wild, huh?",
+      "AI can write music, poems... and even code other AIs. Bro's evolving mid-game.",
+      "There are AI systems trained on memes. So yeah, AI knows what 'skibidi toilet' is.",
+      "Some AI models have more connections than the human brain. Sleep with one eye open..."
+    ];
+
+    function getRandomJoke() {
+      return jokes[Math.floor(Math.random() * jokes.length)];
+    }
+
+    function getRandomFact() {
+      return facts[Math.floor(Math.random() * facts.length)];
+    }
 
     function chat() {
       const input = document.getElementById("userInput").value.trim().toLowerCase();
@@ -97,18 +122,18 @@
 
       addMessage("You", input, "user");
 
-      let reply = "Hmm... I'm still learning that. Try asking something else about AI! 😅";
+      let reply = "Uh... I'm not sure how to respond to that yet. But hey, keep 'em coming!";
 
-      for (const question in responses) {
-        if (input.includes(question)) {
-          reply = responses[question];
+      for (const key in responses) {
+        if (input.includes(key)) {
+          reply = typeof responses[key] === "function" ? responses[key]() : responses[key];
           break;
         }
       }
 
       setTimeout(() => {
         addMessage("Ballistic", reply, "bot");
-        speak(reply);
+        speak(stripEmojis(reply));
       }, 500);
 
       document.getElementById("userInput").value = "";
@@ -134,6 +159,11 @@
       speech.rate = 1;
       speech.volume = 1;
       speechSynthesis.speak(speech);
+    }
+
+    function stripEmojis(text) {
+      // Removes emojis so TTS doesn't read them like a clown 🤡
+      return text.replace(/[\u{1F600}-\u{1F6FF}|\u{2600}-\u{26FF}|\u{2700}-\u{27BF}]/gu, "");
     }
   </script>
 </body>
