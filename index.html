@@ -2,167 +2,128 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Ballistic AI Chat</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Ballistic Bot</title>
   <style>
     body {
-      margin: 0;
-      padding: 0;
-      background: #0f0f0f;
-      font-family: 'Segoe UI', sans-serif;
-      color: #f0f0f0;
-    }
-    .chat-container {
+      font-family: Arial, sans-serif;
+      background: #121212;
+      color: #fff;
       display: flex;
       flex-direction: column;
-      max-width: 800px;
-      margin: 50px auto;
+      align-items: center;
       padding: 20px;
-      background-color: #1e1e1e;
-      border-radius: 12px;
-      box-shadow: 0 0 20px rgba(0, 255, 204, 0.2);
     }
-    .chat-box {
-      flex-grow: 1;
+    h1 {
+      color: #0f0;
+    }
+    #chatbox {
+      width: 90%;
+      max-width: 600px;
+      background: #1e1e1e;
+      border-radius: 10px;
+      padding: 15px;
+      margin-top: 20px;
       height: 400px;
       overflow-y: auto;
-      border: 1px solid #333;
-      border-radius: 8px;
-      padding: 10px;
-      margin-bottom: 10px;
-      background: #121212;
     }
-    .input-container {
-      display: flex;
-      gap: 10px;
-    }
-    input {
-      flex: 1;
-      padding: 10px;
-      border-radius: 8px;
-      border: none;
-      outline: none;
-      font-size: 1rem;
-    }
-    button {
-      background-color: #00ffc8;
-      border: none;
-      color: #000;
-      font-weight: bold;
-      padding: 10px 20px;
-      border-radius: 8px;
-      cursor: pointer;
-    }
-    .bot, .user {
-      margin: 5px 0;
-      padding: 8px;
-      border-radius: 6px;
+    .msg {
+      margin: 10px 0;
     }
     .user {
-      background: #0044ff;
-      align-self: flex-end;
+      color: #4ef;
     }
     .bot {
-      background: #00ffc8;
-      color: #000;
-      align-self: flex-start;
+      color: #8f8;
     }
-    .robot-face {
-      width: 60px;
-      height: 60px;
-      background: #00ffc8;
-      border-radius: 50%;
-      margin: 0 auto 10px;
+    input, button {
+      padding: 10px;
+      border: none;
+      border-radius: 5px;
+      margin-top: 10px;
+    }
+    input {
+      width: 70%;
+    }
+    button {
+      background-color: #0f0;
+      color: black;
+      cursor: pointer;
+      margin: 5px;
+    }
+    .button-grid {
       display: flex;
-      align-items: center;
+      flex-wrap: wrap;
       justify-content: center;
-      font-size: 30px;
-      color: #000;
+      gap: 5px;
+      margin-top: 15px;
     }
   </style>
-  <script async src="https://cse.google.com/cse.js?cx=007e83fae3d2f4825"></script>
 </head>
 <body>
-  <div class="chat-container">
-    <div class="robot-face">🤖</div>
-    <div class="chat-box" id="chat-box"></div>
-    <div class="input-container">
-      <input type="text" id="user-input" placeholder="Ask Ballistic anything...">
-      <button onclick="handleUserInput()">Send</button>
-    </div>
+  <h1>🤖 Ballistic Bot</h1>
+  <div id="chatbox"></div>
+  <input type="text" id="userInput" placeholder="Ask me anything about AI...">
+  <button onclick="chat()">Send</button>
+
+  <div class="button-grid">
+    <button onclick="autoAsk('What is AI')">What is AI?</button>
+    <button onclick="autoAsk('Uses of AI')">Uses of AI</button>
+    <button onclick="autoAsk('Types of AI')">Types of AI</button>
+    <button onclick="autoAsk('What is machine learning')">What is ML?</button>
+    <button onclick="autoAsk('AI vs ML')">AI vs ML</button>
+    <button onclick="autoAsk('AI factory')">AI Factory?</button>
+    <button onclick="autoAsk('Who invented AI')">Inventor of AI</button>
+    <button onclick="autoAsk('Is AI dangerous')">Is AI dangerous?</button>
   </div>
 
-  <div class="gcse-search" style="display:none"></div>
-
   <script>
-    const chatBox = document.getElementById("chat-box");
-    const userInput = document.getElementById("user-input");
+    const chatbox = document.getElementById("chatbox");
 
     const responses = {
-      "hi": "Hey there! 👋",
-      "hello": "Hello, friend! 😊",
-      "what is your name": "I'm Ballistic AI, your virtual buddy! 🤖",
-      "i'm bored": "Let's spice things up! Want a fun fact or a joke? 😄",
-      "what is ai": "AI stands for Artificial Intelligence. It's how machines learn and think!",
-      "who created you": "I was created by a cool developer using HTML, CSS, and JavaScript!",
-      "what is cricket": "Cricket is a bat-and-ball game loved in many countries like India, England, and Australia! 🏏",
-      "what is commerce": "Commerce is the activity of buying and selling, especially on a large scale.",
-      "role of ai in commerce": "AI in commerce helps with recommendations, inventory management, and fraud detection!",
-      "role of ai in medical": "AI assists in diagnostics, patient monitoring, drug development, and robotic surgeries!",
-      "thank you": "You're welcome! 😊",
-      "bye": "See you later! 👋"
+      "what is ai": "AI stands for Artificial Intelligence – machines that can kinda think like humans. Cool, right?",
+      "uses of ai": "Oh dude, AI is used in self-driving cars, chatbots (like me!), recommendation systems, healthcare, you name it!",
+      "types of ai": "There are 3 types: Narrow AI (me!), General AI (like a human brain), and Super AI (scary smart robots 🤖).",
+      "who invented ai": "John McCarthy coined the term 'AI' back in 1956. Total brainiac.",
+      "what is machine learning": "It's a type of AI where computers learn from data. Basically, they study hard and get better over time.",
+      "ai factory": "It's like a production line where AI models are trained, improved, and deployed. A smart factory for smart brains.",
+      "ai vs ml": "AI is the big daddy, ML is its hardworking kid that learns from experience.",
+      "is ai dangerous": "Well, not me 😇. But yeah, if misused or uncontrolled, AI *could* be risky.",
     };
 
-    function speak(text) {
-      const utterance = new SpeechSynthesisUtterance(text.replace(/\p{Emoji}/gu, ''));
-      utterance.voice = speechSynthesis.getVoices().find(v => v.name.includes("Google")) || null;
-      speechSynthesis.speak(utterance);
-    }
-
-    async function fetchFromGoogle(query) {
-      try {
-        const apiKey = "AIzaSyBZblh45bG-n19ep6ecyJ6aDHcWPueq7zU";
-        const cx = "007e83fae3d2f4825";
-        const response = await fetch(`https://www.googleapis.com/customsearch/v1?key=${apiKey}&cx=${cx}&q=${encodeURIComponent(query)}`);
-        const data = await response.json();
-        if (data.items && data.items.length > 0) {
-          return data.items[0].snippet;
-        } else {
-          return "Sorry, I couldn't find anything relevant 😔";
-        }
-      } catch (err) {
-        return "Something went wrong while fetching from the web 😢";
-      }
-    }
-
-    async function handleUserInput() {
-      const input = userInput.value.trim().toLowerCase();
+    function chat() {
+      const input = document.getElementById("userInput").value.trim().toLowerCase();
       if (!input) return;
-      appendMessage("user", input);
 
-      let response = null;
-      for (let key in responses) {
-        if (input.includes(key)) {
-          response = responses[key];
+      addMessage("You", input, "user");
+
+      let reply = "Hmm... I'm still learning that. Try asking something else about AI! 😅";
+
+      for (const question in responses) {
+        if (input.includes(question)) {
+          reply = responses[question];
           break;
         }
       }
 
-      if (!response) {
-        response = await fetchFromGoogle(input);
-      }
+      setTimeout(() => {
+        addMessage("Ballistic", reply, "bot");
+      }, 500);
 
-      appendMessage("bot", response);
-      speak(response);
-      userInput.value = "";
+      document.getElementById("userInput").value = "";
     }
 
-    function appendMessage(sender, text) {
+    function autoAsk(text) {
+      document.getElementById("userInput").value = text;
+      chat();
+    }
+
+    function addMessage(sender, text, className) {
       const msg = document.createElement("div");
-      msg.className = sender;
-      msg.innerText = text;
-      chatBox.appendChild(msg);
-      chatBox.scrollTop = chatBox.scrollHeight;
+      msg.className = `msg ${className}`;
+      msg.innerHTML = `<strong>${sender}:</strong> ${text}`;
+      chatbox.appendChild(msg);
+      chatbox.scrollTop = chatbox.scrollHeight;
     }
   </script>
 </body>
