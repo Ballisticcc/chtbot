@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Ballistic Bot - Casual AI</title>
+  <title>Ballistic Bot - Chat AI</title>
   <style>
     body {
       font-family: Arial, sans-serif;
-      background: #121212;
+      background: #111;
       color: #fff;
       display: flex;
       flex-direction: column;
@@ -67,66 +67,60 @@
   <button onclick="chat()">Send</button>
 
   <div class="button-grid">
-    <button onclick="autoAsk('What is AI')">What is AI?</button>
+    <button onclick="autoAsk('What is AI?')">What is AI?</button>
     <button onclick="autoAsk('Uses of AI')">Uses of AI</button>
-    <button onclick="autoAsk('Tell me an AI joke')">AI Joke</button>
-    <button onclick="autoAsk('Is AI dangerous')">Is AI Dangerous?</button>
-    <button onclick="autoAsk('What is machine learning')">ML?</button>
-    <button onclick="autoAsk('Who invented AI')">Inventor?</button>
-    <button onclick="autoAsk('What is an AI factory')">AI Factory?</button>
-    <button onclick="autoAsk('Random')">Random Fun Fact</button>
+    <button onclick="autoAsk('Tell me a joke')">AI Joke</button>
+    <button onclick="autoAsk('Is AI dangerous?')">AI Danger?</button>
+    <button onclick="autoAsk('What is machine learning?')">ML?</button>
+    <button onclick="autoAsk('AI vs ML')">AI vs ML</button>
+    <button onclick="autoAsk('What is an AI factory?')">AI Factory?</button>
+    <button onclick="autoAsk('Give me a random fact')">Random Fact</button>
   </div>
 
   <script>
     const chatbox = document.getElementById("chatbox");
 
-    const responses = {
-      "what is ai": "AI is like giving your computer a brain... but not a human brain, more like a goldfish that learns quickly.",
-      "uses of ai": "From recommending your next binge to driving Teslas, AI's everywhere. It's even in your camera filters, bruh.",
-      "what is machine learning": "ML is AI's way of saying 'I'll do better next time, I promise!' It learns from data like we learn from memes.",
-      "ai vs ml": "AI is the boss. ML is the intern doing all the heavy lifting while AI takes the credit.",
-      "is ai dangerous": "Well, I won't take over the world. But if someone trains an AI to steal your fridge, that ain't on me.",
-      "who invented ai": "John McCarthy coined 'AI' in 1956. Basically the godfather of smart code.",
-      "what is an ai factory": "An AI factory is like a gym for algorithms. They go in dumb, get trained, come out smart and ripped.",
-      "tell me an ai joke": getRandomJoke(),
-      "random": getRandomFact()
-    };
-
     const jokes = [
-      "Why did the AI get kicked out of school? It kept copying its own homework.",
-      "I tried making an AI that tells jokes... but it only tells ones about 1s and 0s.",
-      "Why did the robot go to therapy? It had a lot of processing to do.",
-      "My AI told me it’s self-aware. I said, 'Cool, now do my homework.'",
-      "AI walked into a bar. Bartender says, 'We don’t serve your kind here.' AI replies, 'That’s discriminatory data!'"
+      "Why did the AI break up with its girlfriend? Too many neural issues.",
+      "I told my AI to write a joke. It replied: 'I am funny.'",
+      "My AI wants to be a stand-up comedian. Its delivery is robotic though.",
+      "Why don’t robots get scared? They have nerves of steel."
     ];
 
     const facts = [
-      "Did you know? AI beat a world champion at chess in 1997. Checkmate, humans.",
-      "Machine learning is used to detect diseases way before symptoms show. Wild, huh?",
-      "AI can write music, poems... and even code other AIs. Bro's evolving mid-game.",
-      "There are AI systems trained on memes. So yeah, AI knows what 'skibidi toilet' is.",
-      "Some AI models have more connections than the human brain. Sleep with one eye open..."
+      "AI can detect cancer better than some doctors.",
+      "Voice assistants are basically baby AIs.",
+      "AI helped beat world chess champions... with ease.",
+      "Most social media feeds are run by AI. Wild, huh?",
+      "Some AIs can generate original artwork!"
     ];
 
-    function getRandomJoke() {
-      return jokes[Math.floor(Math.random() * jokes.length)];
-    }
-
-    function getRandomFact() {
-      return facts[Math.floor(Math.random() * facts.length)];
-    }
+    const responses = {
+      "what is ai": "AI stands for Artificial Intelligence – giving machines the ability to kinda think. Like me, but cooler.",
+      "uses of ai": "AI is used in self-driving cars, voice assistants, Netflix recommendations, and even fridges now.",
+      "what is machine learning": "Machine Learning is like feeding your AI a ton of data so it gets smarter over time. Just like you cramming before exams.",
+      "ai vs ml": "AI is the big concept, and ML is a part of it where the AI learns from data. Like AI is the cake and ML is the sugar.",
+      "is ai dangerous": "Depends. I won't hack your fridge. But unmonitored AI in wrong hands? Spooky stuff.",
+      "who invented ai": "The term AI was coined by John McCarthy in 1956. Big brain move.",
+      "what is an ai factory": "An AI factory is a workflow system to train, test, and deploy AIs like they're on a conveyor belt. Smart stuff.",
+      "tell me a joke": () => jokes[Math.floor(Math.random() * jokes.length)],
+      "give me a random fact": () => facts[Math.floor(Math.random() * facts.length)]
+    };
 
     function chat() {
-      const input = document.getElementById("userInput").value.trim().toLowerCase();
+      const inputElement = document.getElementById("userInput");
+      const input = inputElement.value.trim();
       if (!input) return;
 
       addMessage("You", input, "user");
 
-      let reply = "Uh... I'm not sure how to respond to that yet. But hey, keep 'em coming!";
+      let lowerInput = input.toLowerCase();
+      let reply = "Uhh... I'm not sure about that. Try asking something AI-related!";
 
-      for (const key in responses) {
-        if (input.includes(key)) {
-          reply = typeof responses[key] === "function" ? responses[key]() : responses[key];
+      for (let key in responses) {
+        if (lowerInput.includes(key)) {
+          const val = responses[key];
+          reply = typeof val === "function" ? val() : val;
           break;
         }
       }
@@ -134,9 +128,9 @@
       setTimeout(() => {
         addMessage("Ballistic", reply, "bot");
         speak(stripEmojis(reply));
-      }, 500);
+      }, 300);
 
-      document.getElementById("userInput").value = "";
+      inputElement.value = "";
     }
 
     function autoAsk(text) {
@@ -162,8 +156,7 @@
     }
 
     function stripEmojis(text) {
-      // Removes emojis so TTS doesn't read them like a clown 🤡
-      return text.replace(/[\u{1F600}-\u{1F6FF}|\u{2600}-\u{26FF}|\u{2700}-\u{27BF}]/gu, "");
+      return text.replace(/[\u{1F300}-\u{1F6FF}|\u{2600}-\u{27BF}|\u{1F900}-\u{1F9FF}]/gu, '');
     }
   </script>
 </body>
