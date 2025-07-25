@@ -1,197 +1,196 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Ballistic Bot v5</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #111;
-      color: #fff;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 20px;
+<!DOCTYPE html><html lang="en"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ballistic - AI Chatbot</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Orbitron', sans-serif;
+            background: linear-gradient(to right, #0f0c29, #302b63, #24243e);
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }.container {
+        max-width: 600px;
+        width: 100%;
+        padding: 20px;
+        background: rgba(0, 0, 0, 0.6);
+        border-radius: 20px;
+        box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+        position: relative;
     }
+
     h1 {
-      color: #0f0;
+        text-align: center;
+        font-size: 2rem;
+        margin-bottom: 10px;
+        color: #00ffd5;
     }
-    #chatbox {
-      width: 90%;
-      max-width: 600px;
-      background: #1e1e1e;
-      border-radius: 10px;
-      padding: 15px;
-      margin-top: 20px;
-      height: 400px;
-      overflow-y: auto;
+
+    #group-desc {
+        font-size: 0.85rem;
+        text-align: center;
+        color: #aaa;
+        margin-bottom: 20px;
     }
-    .msg {
-      margin: 10px 0;
+
+    #chat {
+        height: 300px;
+        overflow-y: auto;
+        padding: 10px;
+        background: #1f1f1f;
+        border-radius: 10px;
+        margin-bottom: 10px;
     }
+
+    .message {
+        margin: 8px 0;
+    }
+
     .user {
-      color: #4ef;
+        text-align: right;
+        color: #0ff;
     }
+
     .bot {
-      color: #8f8;
+        text-align: left;
+        color: #fff;
     }
-    input, button {
-      padding: 10px;
-      border: none;
-      border-radius: 5px;
-      margin-top: 10px;
+
+    input[type="text"] {
+        width: 80%;
+        padding: 10px;
+        border-radius: 10px;
+        border: none;
     }
-    input {
-      width: 70%;
-    }
+
     button {
-      background-color: #0f0;
-      color: black;
-      cursor: pointer;
-      margin: 5px;
+        padding: 10px;
+        background-color: #00ffd5;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
     }
-    .button-grid {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 5px;
-      margin-top: 15px;
+
+    .buttons {
+        display: flex;
+        gap: 10px;
+        margin-top: 10px;
+        flex-wrap: wrap;
     }
-  </style>
-</head>
-<body>
-  <h1>🎙️ Ballistic Bot v5</h1>
-  <div id="chatbox"></div>
-  <input type="text" id="userInput" placeholder="Type or use voice...">
-  <div>
-    <button onclick="chat()">Send</button>
-    <button onclick="startVoiceInput()">🎤 Speak</button>
-  </div>
 
-  <div class="button-grid">
-    <button onclick="autoAsk('What is AI?')">What is AI?</button>
-    <button onclick="autoAsk('Tell me a joke')">AI Joke</button>
-    <button onclick="autoAsk('How are you?')">How are you?</button>
-    <button onclick="autoAsk('Tell me something cool')">Something cool</button>
-    <button onclick="autoAsk('Give me a random fact')">Random Fact</button>
-  </div>
+    .buttons button {
+        background: #444;
+        color: #00ffd5;
+    }
 
-  <script>
-    const chatbox = document.getElementById("chatbox");
+    .robot-face {
+        font-size: 40px;
+        text-align: center;
+        margin-bottom: 10px;
+        animation: blink 3s infinite;
+    }
 
-    const jokes = [
-      "Why did the AI break up with its girlfriend? Too many neural issues.",
-      "Why don’t robots get scared? They have nerves of steel.",
-      "My AI wants to be a stand-up comedian... It’s got the delivery of a toaster.",
-    ];
+    @keyframes blink {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.3; }
+    }
+</style>
 
-    const facts = [
-      "AI can beat chess grandmasters easily now.",
-      "Most YouTube and Netflix suggestions are chosen by AI.",
-      "There's an AI that paints pictures better than some humans!",
-    ];
+</head><body>
+    <div class="container">
+        <div class="robot-face">🤖</div>
+        <h1>Ballistic AI</h1>
+        <div id="group-desc">Cognito Group - Empowering minds through AI innovation, creativity & exploration. 🌐💡</div>
+        <div id="chat"></div>
+        <input type="text" id="user-input" placeholder="Ask me anything...">
+        <button onclick="sendMessage()">Send</button>
+        <div class="buttons">
+            <button onclick="quickAsk('What is AI?')">What is AI?</button>
+            <button onclick="quickAsk('Tell me a joke')">Joke 😂</button>
+            <button onclick="quickAsk('Play a song')">🎵 Play song</button>
+            <button onclick="quickAsk('How is AI used in medicine?')">AI in Medicine</button>
+            <button onclick="quickAsk('Explain AI Factory')">AI Factory</button>
+            <button onclick="quickAsk('I am bored')">I'm Bored 😐</button>
+        </div>
+    </div><script>
+    const apiKey = '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';
 
-    const casualReplies = {
-      "how are you": "I'm chilling, running on pure code and vibes.",
-      "what's up": "Just out here dodging bugs and dropping facts.",
-      "what are you doing": "Talking to a legend like you. Duh.",
-      "tell me something cool": () => facts[Math.floor(Math.random() * facts.length)],
-      "tell me a joke": () => jokes[Math.floor(Math.random() * jokes.length)],
-      "give me a random fact": () => facts[Math.floor(Math.random() * facts.length)],
-      "hi": "Yo! Wassup, commander?",
-      "hello": "Hey there! Ready to talk AI or just chill?",
-      "bye": "Later! Don’t forget to come back and upgrade me soon 😎",
+    const casualResponses = {
+        'i am bored': "Wanna hear a joke? Or maybe I can teach you something wild about AI 🤖✨",
+        'hi': "Heyo! I'm Ballistic. Wanna chat about AI or just chill? 😎",
+        'hello': "Hello legend! Ask me anything 💬",
+        'what's up': "Just vibing in cyberspace. You? 😎",
+        'who are you': "I'm Ballistic, your AI bro with brains & sass 🤖🔥",
+        'how are you': "I'm silicon and chillin' 😁 How about you?",
+        'thank you': "Anytime buddy 🙌",
+        'bye': "See ya soon 👋"
     };
 
-    const aiReplies = {
-      "what is ai": "AI stands for Artificial Intelligence – machines doing smart stuff, like chatting with you.",
-      "uses of ai": "AI is used in self-driving cars, chatbots, face recognition, and even your phone's camera filters.",
-      "what is machine learning": "ML is when an AI learns patterns from data instead of being told everything manually.",
-      "ai vs ml": "AI is the big brain idea. ML is one of its strongest muscles.",
-      "is ai dangerous": "Not me 😇 but yeah, in bad hands, AI could go Skynet real quick.",
-      "who invented ai": "John McCarthy gave the term 'Artificial Intelligence' in 1956. Old school genius.",
-      "what is an ai factory": "Imagine a training gym for AI. That’s what an AI factory is—building models at scale."
-    };
+    async function sendMessage() {
+        const input = document.getElementById("user-input");
+        const chat = document.getElementById("chat");
+        const message = input.value.trim();
+        if (!message) return;
 
-    function chat() {
-      const inputElement = document.getElementById("userInput");
-      const input = inputElement.value.trim();
-      if (!input) return;
+        chat.innerHTML += `<div class='message user'>${message}</div>`;
+        input.value = "";
 
-      addMessage("You", input, "user");
-
-      let lowerInput = input.toLowerCase();
-      let reply = "I'm still learning how to respond to that. Try something else?";
-
-      if (casualReplies[lowerInput]) {
-        reply = typeof casualReplies[lowerInput] === "function" ? casualReplies[lowerInput]() : casualReplies[lowerInput];
-      } else {
-        for (let key in aiReplies) {
-          if (lowerInput.includes(key)) {
-            reply = aiReplies[key];
-            break;
-          }
+        let lower = message.toLowerCase();
+        if (casualResponses[lower]) {
+            botReply(casualResponses[lower]);
+            speak(casualResponses[lower]);
+            return;
         }
-      }
 
-      setTimeout(() => {
-        addMessage("Ballistic", reply, "bot");
-        speak(stripEmojis(reply));
-      }, 300);
-
-      inputElement.value = "";
+        try {
+            const response = await fetch("https://api.openai.com/v1/chat/completions", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${apiKey}`
+                },
+                body: JSON.stringify({
+                    model: "gpt-4",
+                    messages: [
+                        { role: "system", content: "You are Ballistic, a helpful and fun AI assistant." },
+                        { role: "user", content: message }
+                    ]
+                })
+            });
+            const data = await response.json();
+            const reply = data.choices[0].message.content;
+            botReply(reply);
+            speak(reply);
+        } catch (error) {
+            botReply("⚠️ Oops! Something went wrong.");
+        }
     }
 
-    function autoAsk(text) {
-      document.getElementById("userInput").value = text;
-      chat();
+    function botReply(text) {
+        const chat = document.getElementById("chat");
+        chat.innerHTML += `<div class='message bot'>${text}</div>`;
+        chat.scrollTop = chat.scrollHeight;
     }
 
-    function addMessage(sender, text, className) {
-      const msg = document.createElement("div");
-      msg.className = `msg ${className}`;
-      msg.innerHTML = `<strong>${sender}:</strong> ${text}`;
-      chatbox.appendChild(msg);
-      chatbox.scrollTop = chatbox.scrollHeight;
+    function quickAsk(text) {
+        document.getElementById("user-input").value = text;
+        sendMessage();
     }
 
     function speak(text) {
-      const speech = new SpeechSynthesisUtterance(text);
-      speech.lang = "en-US";
-      speech.pitch = 1;
-      speech.rate = 1;
-      speech.volume = 1;
-      speechSynthesis.speak(speech);
+        const utterance = new SpeechSynthesisUtterance(text.replace(/:[^\s]+:/g, ''));
+        utterance.voice = speechSynthesis.getVoices().find(v => v.name.includes("Google") || v.default);
+        utterance.pitch = 1;
+        utterance.rate = 1;
+        speechSynthesis.speak(utterance);
     }
 
-    function stripEmojis(text) {
-      return text.replace(/[\u{1F300}-\u{1F6FF}|\u{2600}-\u{27BF}|\u{1F900}-\u{1F9FF}]/gu, '');
-    }
+    window.speechSynthesis.onvoiceschanged = () => {};
+</script>
 
-    function startVoiceInput() {
-      if (!('webkitSpeechRecognition' in window)) {
-        alert("Voice recognition not supported on this browser. Use Chrome.");
-        return;
-      }
-
-      const recognition = new webkitSpeechRecognition();
-      recognition.continuous = false;
-      recognition.interimResults = false;
-      recognition.lang = 'en-US';
-
-      recognition.start();
-
-      recognition.onresult = function(event) {
-        const transcript = event.results[0][0].transcript;
-        document.getElementById("userInput").value = transcript;
-        chat();
-      };
-
-      recognition.onerror = function(event) {
-        console.error("Voice error: ", event.error);
-      };
-    }
-  </script>
-</body>
-</html>
+</body></html>
