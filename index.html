@@ -1,140 +1,89 @@
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Ballistic AI Chatbot</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #0f172a;
-      color: white;
-      margin: 0;
-      padding: 0;
-    }
-    .chat-container {
-      display: flex;
-      flex-direction: column;
-      height: 100vh;
-      max-width: 600px;
-      margin: auto;
-      padding: 20px;
-      box-sizing: border-box;
-    }
-    .chat-box {
-      flex-grow: 1;
-      overflow-y: auto;
-      margin-bottom: 10px;
-      background: #1e293b;
-      padding: 10px;
-      border-radius: 10px;
-    }
-    .message {
-      margin-bottom: 10px;
-      padding: 10px;
-      border-radius: 8px;
-    }
-    .user {
-      background-color: #3b82f6;
-      text-align: right;
-    }
-    .bot {
-      background-color: #4ade80;
-      text-align: left;
-    }
-    .input-area {
-      display: flex;
-    }
-    input[type="text"] {
-      flex-grow: 1;
-      padding: 10px;
-      border-radius: 10px;
-      border: none;
-      outline: none;
-      font-size: 16px;
-    }
-    button {
-      background-color: #facc15;
-      border: none;
-      padding: 10px 20px;
-      margin-left: 10px;
-      border-radius: 10px;
-      font-size: 16px;
-      cursor: pointer;
-    }
-    .buttons {
-      margin-top: 10px;
-    }
-    .buttons button {
-      margin: 5px;
-    }
+    body { background: #1a1a2e; color: #e0e0e0; font-family: sans-serif; margin: 0; padding: 20px; }
+    .chatbox { max-width: 600px; margin: auto; display: flex; flex-direction: column; height: 80vh; }
+    #messages { flex: 1; overflow-y: auto; padding: 10px; background: #0f3460; border-radius: 10px; } 
+    .message { padding: 8px; margin: 4px 0; border-radius: 6px; }
+    .user { background: #533483; text-align: right; }
+    .bot { background: #38bdf8; text-align: left; color: #000; }
+    .controls { display: flex; margin-top: 10px; }
+    input { flex: 1; padding: 10px; border-radius: 6px; border: none; }
+    button { padding: 10px 15px; margin-left: 10px; border-radius: 6px; background: #38bdf8; border: none; color: #000; cursor: pointer; }
+    .quick-buttons { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0; }
+    .quick-buttons button { background: #533483; color: #e0e0e0; border: none; padding: 8px; border-radius: 6px; cursor: pointer; }
   </style>
 </head>
 <body>
-  <div class="chat-container">
-    <div class="chat-box" id="chat"></div>
-    <div class="input-area">
-      <input type="text" id="input" placeholder="Ask anything about AI..." />
-      <button onclick="sendMessage()">Send</button>
+  <h1>🤖 Ballistic AI</h1>
+  <div class="chatbox">
+    <div id="messages"></div>
+    <div class="quick-buttons">
+      <button onclick="sendPreset('What is AI?')">What is AI?</button>
+      <button onclick="sendPreset('Explain AI Factory')">AI Factory</button>
+      <button onclick="sendPreset('Role of AI in commerce')">AI in Commerce</button>
+      <button onclick="sendPreset('Role of AI in medicine')">AI in Medicine</button>
+      <button onclick="sendPreset('Tell me a joke')">Joke</button>
     </div>
-    <div class="buttons">
-      <button onclick="sendPreset('What is Artificial Intelligence?')">What is AI</button>
-      <button onclick="sendPreset('Explain AI in medical and commerce.')">AI in Commerce & Medical</button>
-      <button onclick="sendPreset('What is an AI Factory?')">What is an AI Factory?</button>
+    <div class="controls">
+      <input id="userInput" placeholder="Ask anything..." />
+      <button onclick="sendCurrent()">Send</button>
     </div>
-  </div>  <script>
-    const chat = document.getElementById('chat');
-    const input = document.getElementById('input');
+  </div>
 
-    function addMessage(text, sender) {
-      const msg = document.createElement('div');
-      msg.className = `message ${sender}`;
-      msg.textContent = text;
-      chat.appendChild(msg);
-      chat.scrollTop = chat.scrollHeight;
-    }
+  <script>
+    const messages = document.getElementById("messages");
+    const userInput = document.getElementById("userInput");
 
-    async function sendMessage() {
-      const message = input.value.trim();
-      if (!message) return;
-
-      addMessage(message, 'user');
-      input.value = '';
-      addMessage('Thinking...', 'bot');
-
-      const response = await fetch('https://api.openai.com/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer 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'
-        },
-        body: JSON.stringify({
-          model: 'gpt-3.5-turbo',
-          messages: [
-            { role: 'system', content: 'You are a friendly and casual AI expert named Ballistic who explains AI and tech topics clearly. Avoid suggesting Google. If the question is fun or casual, respond in a light tone.' },
-            { role: 'user', content: message }
-          ]
-        })
-      });
-
-      const data = await response.json();
-      const reply = data.choices?.[0]?.message?.content || 'Something went wrong!';
-      chat.lastChild.textContent = reply;
-      speak(reply);
-    }
-
-    function sendPreset(message) {
-      input.value = message;
-      sendMessage();
-    }
-
-    function speak(text) {
-      if ('speechSynthesis' in window) {
-        const utterance = new SpeechSynthesisUtterance(text);
-        utterance.lang = 'en-US';
-        utterance.pitch = 1.1;
-        utterance.rate = 1;
-        speechSynthesis.speak(utterance);
+    function addMessage(role, text) {
+      const el = document.createElement("div");
+      el.className = "message " + role;
+      el.textContent = (role === "user" ? "You: " : "Ballistic: ") + text;
+      messages.appendChild(el);
+      messages.scrollTop = messages.scrollHeight;
+      if (role === "bot" && speechSynthesis) {
+        const ut = new SpeechSynthesisUtterance(text);
+        ut.lang = "en-US";
+        speechSynthesis.speak(ut);
       }
     }
-  </script></body>
+
+    async function askAI(msg) {
+      try {
+        const resp = await fetch("/chat", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ message: msg })
+        });
+        const data = await resp.json();
+        return data.reply;
+      } catch {
+        return "Sorry, couldn't connect to AI.";
+      }
+    }
+
+    async function sendCurrent() {
+      const txt = userInput.value.trim();
+      if (!txt) return;
+      addMessage("user", txt);
+      userInput.value = "";
+      addMessage("bot", "Thinking...");
+      const reply = await askAI(txt);
+      messages.lastChild.textContent = "Ballistic: " + reply;
+      addMessage("bot", reply); 
+    }
+
+    function sendPreset(text) {
+      userInput.value = text;
+      sendCurrent();
+    }
+
+    userInput.addEventListener("keypress", e => {
+      if (e.key === "Enter") sendCurrent();
+    });
+  </script>
+</body>
 </html>
