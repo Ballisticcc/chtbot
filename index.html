@@ -1,186 +1,131 @@
 <!DOCTYPE html><html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Ballistic - Offline AI Bot</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ballistic AI Chatbot</title>
   <style>
-    * {
-      box-sizing: border-box;
-      font-family: 'Segoe UI', sans-serif;
-    }
     body {
       margin: 0;
-      padding: 0;
-      background: #0f0f0f;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to right, #0f2027, #203a43, #2c5364);
       color: #fff;
       display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-    }
-    .chatbot {
-      background: #1f1f1f;
-      border-radius: 20px;
-      box-shadow: 0 0 20px rgba(0, 255, 255, 0.2);
-      width: 350px;
-      height: 600px;
-      display: flex;
       flex-direction: column;
-      overflow: hidden;
-      position: relative;
-      transition: all 0.3s ease-in-out;
+      align-items: center;
+      padding: 20px;
     }
-    .header {
-      padding: 15px;
-      background: #111;
-      text-align: center;
-      font-size: 1.2em;
-      font-weight: bold;
-      border-bottom: 1px solid #333;
+    h1 {
+      font-size: 2em;
+      margin-bottom: 10px;
     }
-    .chat-box {
-      flex: 1;
-      padding: 10px;
+    .chat-container {
+      background-color: rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      padding: 20px;
+      max-width: 600px;
+      width: 100%;
+      box-shadow: 0 0 20px rgba(0,0,0,0.3);
+    }
+    #chat {
+      max-height: 400px;
       overflow-y: auto;
+      margin-bottom: 20px;
     }
-    .chat {
+    .user, .bot {
       margin: 10px 0;
-      max-width: 80%;
-      padding: 10px 15px;
-      border-radius: 15px;
-      animation: fadeIn 0.5s ease-in-out;
     }
     .user {
-      background: #00bcd4;
-      color: #000;
-      align-self: flex-end;
+      text-align: right;
+      color: #66ffcc;
     }
     .bot {
-      background: #333;
-      align-self: flex-start;
+      text-align: left;
+      color: #ffcc66;
     }
-    @keyframes fadeIn {
-      from {opacity: 0; transform: translateY(10px);}
-      to {opacity: 1; transform: translateY(0);}
+    #userInput {
+      width: calc(100% - 80px);
+      padding: 10px;
+      border: none;
+      border-radius: 5px;
     }
-    .input-box {
+    #sendButton {
+      width: 60px;
+      padding: 10px;
+      border: none;
+      background-color: #66ccff;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .btn-group {
+      margin-top: 10px;
       display: flex;
-      padding: 10px;
-      background: #111;
-      border-top: 1px solid #333;
+      gap: 10px;
     }
-    input[type="text"] {
-      flex: 1;
-      padding: 10px;
+    .topic-btn {
+      padding: 8px 12px;
       border: none;
-      border-radius: 10px;
-      outline: none;
-    }
-    button {
-      margin-left: 10px;
-      padding: 10px;
-      border: none;
-      background: #00bcd4;
-      color: #000;
-      border-radius: 10px;
+      border-radius: 5px;
+      background-color: #444;
+      color: #fff;
       cursor: pointer;
-      transition: 0.2s;
     }
-    button:hover {
-      background: #00e5ff;
-    }
-    .theme-toggle {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      background: #00bcd4;
-      border: none;
-      padding: 5px 10px;
-      border-radius: 10px;
-      cursor: pointer;
-      font-size: 0.8em;
-    }
-    .speaking-wave {
-      height: 4px;
-      width: 100%;
-      background: linear-gradient(90deg, #00f0ff, transparent);
-      animation: speakwave 1s infinite;
-    }
-    @keyframes speakwave {
-      0% { transform: scaleX(1); }
-      50% { transform: scaleX(1.3); }
-      100% { transform: scaleX(1); }
+    .topic-btn:hover {
+      background-color: #666;
     }
   </style>
 </head>
 <body>
-<div class="chatbot">
-  <div class="header">🤖 Ballistic AI</div>
-  <button class="theme-toggle" onclick="toggleTheme()">Toggle Theme</button>
-  <div class="chat-box" id="chat-box">
-    <div class="chat bot">Hey! I'm Ballistic. Ask me anything or just chill 😎</div>
-  </div>
-  <div class="input-box">
-    <input type="text" id="user-input" placeholder="Type here...">
-    <button onclick="sendMessage()">Send</button>
-  </div>
-</div><script>
-  let dark = true;
+  <h1>Ballistic AI Chatbot</h1>
+  <div class="chat-container">
+    <div id="chat"></div>
+    <input type="text" id="userInput" placeholder="Say something...">
+    <button id="sendButton">Send</button>
+    <div class="btn-group">
+      <button class="topic-btn" onclick="quickReply('What is Artificial Intelligence?')">What is AI?</button>
+      <button class="topic-btn" onclick="quickReply('Explain AI Factory')">AI Factory</button>
+      <button class="topic-btn" onclick="quickReply('Tell me a joke')">Joke</button>
+    </div>
+  </div>  <script>
+    const chat = document.getElementById("chat");
 
-  function toggleTheme() {
-    document.body.style.background = dark ? '#fff' : '#0f0f0f';
-    document.body.style.color = dark ? '#000' : '#fff';
-    dark = !dark;
-  }
-
-  function sendMessage() {
-    const input = document.getElementById("user-input");
-    const chatBox = document.getElementById("chat-box");
-    const userMsg = input.value.trim();
-    if (userMsg === '') return;
-
-    appendMessage(userMsg, 'user');
-    input.value = '';
-    setTimeout(() => generateReply(userMsg), 500);
-  }
-
-  function appendMessage(message, type) {
-    const chat = document.createElement("div");
-    chat.classList.add("chat", type);
-    chat.textContent = message;
-    document.getElementById("chat-box").appendChild(chat);
-    chat.scrollIntoView({behavior: "smooth"});
-  }
-
-  function generateReply(input) {
-    let reply = "";
-    const lower = input.toLowerCase();
-    if (lower.includes("what is ai") || lower.includes("ai")) {
-      reply = "AI means Artificial Intelligence. It's like me but smarter... maybe. 😁";
-    } else if (lower.includes("factory")) {
-      reply = "An AI-powered factory uses machines, sensors, and smart systems to automate tasks! Like real-deal Skynet... but friendly.";
-    } else if (lower.includes("hi") || lower.includes("hello")) {
-      reply = "Yo! What's good? I'm Ballistic, your offline AI homie.";
-    } else {
-      const casuals = [
-        "That's dope! 🤘",
-        "You cracked me up 😂",
-        "Sounds like a plan 🧠",
-        "Tell me more, I'm listening 👂",
-        "Aight, hit me with another one! 💥"
-      ];
-      reply = casuals[Math.floor(Math.random() * casuals.length)];
+    function appendMessage(content, className) {
+      const msg = document.createElement("div");
+      msg.className = className;
+      msg.textContent = content;
+      chat.appendChild(msg);
+      chat.scrollTop = chat.scrollHeight;
+      const utter = new SpeechSynthesisUtterance(content);
+      speechSynthesis.speak(utter);
     }
 
-    const speakWave = document.createElement('div');
-    speakWave.className = 'speaking-wave';
-    document.getElementById("chat-box").appendChild(speakWave);
+    function respond(message) {
+      const lower = message.toLowerCase();
+      if (lower.includes("ai factory")) {
+        return "An AI Factory is a system where artificial intelligence automates, optimizes, and accelerates industrial or business processes using data, sensors, machine learning, and robotics. It's like having a smart brain running a whole factory!";
+      } else if (lower.includes("what is ai") || lower.includes("artificial intelligence")) {
+        return "AI stands for Artificial Intelligence. It refers to machines or programs that can perform tasks that normally require human intelligence, such as learning, problem-solving, and understanding language.";
+      } else if (lower.includes("joke")) {
+        return "Why don’t robots ever get scared? Because they have nerves of steel!";
+      } else if (lower.includes("hello") || lower.includes("hi")) {
+        return "Hey there! I'm Ballistic, your offline AI buddy! Ask me anything related to AI or just chat casually.";
+      } else {
+        return "Sorry, I'm still learning. Try asking about AI, AI factories, or just say hi!";
+      }
+    }
 
-    const utterance = new SpeechSynthesisUtterance(reply);
-    utterance.onend = () => speakWave.remove();
-    speechSynthesis.speak(utterance);
+    document.getElementById("sendButton").onclick = () => {
+      const input = document.getElementById("userInput");
+      const userMsg = input.value.trim();
+      if (userMsg === "") return;
+      appendMessage("You: " + userMsg, "user");
+      const reply = respond(userMsg);
+      appendMessage("Ballistic: " + reply, "bot");
+      input.value = "";
+    };
 
-    appendMessage(reply, 'bot');
-  }
-</script></body>
+    function quickReply(text) {
+      document.getElementById("userInput").value = text;
+      document.getElementById("sendButton").click();
+    }
+  </script></body>
 </html>
